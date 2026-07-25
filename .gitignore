@@ -40,6 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# sensitive & large files
+# sensitive files
 accounts.txt
-public/Docs/

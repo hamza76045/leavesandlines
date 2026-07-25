@@ -25,7 +25,7 @@ export const books: Book[] = [
       "An extraordinary travelogue and literary work detailing the epic journey from Taj Mahal to Zero Point.",
     pages: 350,
     status: "available",
-    pdfUrl: "/Docs/Taj%20Mehal%20Say%20Zero%20Point%20(1).pdf",
+    pdfUrl: "/Docs/Taj%20Mehal%20Say%20Zero%20Point.pdf",
     coverTone: "cyan",
   },
   {
