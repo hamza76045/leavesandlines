@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Book } from "@/lib/mock/books";
 
 const coverStyles: Record<Book["coverTone"], string> = {
@@ -7,14 +8,35 @@ const coverStyles: Record<Book["coverTone"], string> = {
 };
 
 type BookCoverProps = {
-  book: Pick<Book, "title" | "author" | "coverTone" | "category">;
+  book: Pick<Book, "title" | "author" | "coverImage" | "coverTone" | "category">;
   compact?: boolean;
 };
 
 export function BookCover({ book, compact = false }: BookCoverProps) {
+  if (book.coverImage) {
+    return (
+      <div
+        className="relative aspect-[405/551] overflow-hidden rounded-md bg-surface shadow-[0_18px_36px_rgba(15,23,42,0.18)] ring-1 ring-black/10"
+        aria-label={`${book.title} cover`}
+      >
+        <Image
+          src={book.coverImage}
+          alt={`${book.title} cover`}
+          fill
+          sizes={
+            compact
+              ? "(max-width: 768px) 180px, 180px"
+              : "(max-width: 768px) 100vw, 320px"
+          }
+          className="object-cover"
+        />
+      </div>
+    );
+  }
+
   return (
     <div
-      className={`relative aspect-[2/3] overflow-hidden rounded-md bg-gradient-to-br ${coverStyles[book.coverTone]} shadow-[0_18px_36px_rgba(15,23,42,0.18)]`}
+      className={`relative aspect-[405/551] overflow-hidden rounded-md bg-gradient-to-br ${coverStyles[book.coverTone]} shadow-[0_18px_36px_rgba(15,23,42,0.18)]`}
       aria-label={`${book.title} cover`}
     >
       <div className="absolute inset-x-0 top-0 h-1 bg-white/55" />

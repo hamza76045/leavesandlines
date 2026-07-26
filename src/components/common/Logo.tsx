@@ -9,11 +9,11 @@ export function Logo({
 }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-lg border border-border/40 shadow-sm transition hover:scale-105 ${className}`}
+      className={`relative overflow-hidden rounded-lg   ${className}`}
       style={{ width: size, height: size }}
     >
       <Image
-        src="/logo.png"
+        src="/logo.svg"
         alt="Leafs & Lines Logo"
         fill
         sizes={`${size}px`}

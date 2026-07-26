@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bookmark, Share2 } from "lucide-react";
 import { BlogRenderer } from "@/components/blog/BlogRenderer";
+import { PublicFooter } from "@/components/layout/PublicFooter";
 import { PublicNav } from "@/components/layout/PublicNav";
 import { fetchPostBySlugFromSupabase } from "@/lib/supabase/blogs";
 import { HARDCODED_AUTHOR, blogPosts } from "@/lib/mock/blogs";
@@ -28,12 +29,12 @@ export default async function BlogPostPage({
   }
 
   return (
-    <div className="min-h-screen bg-bg text-text">
+    <div className="flex min-h-screen flex-col bg-bg text-text">
       <PublicNav />
-      <div className="sticky top-16 z-20 h-1 bg-slate-100">
+      <div className="sticky top-24 z-20 mt-24 h-1 bg-slate-100">
         <div className="h-full w-1/3 bg-brand" />
       </div>
-      <main className="mx-auto grid w-full max-w-[1180px] gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,740px)_260px] lg:items-start">
+      <main className="mx-auto grid w-full max-w-[1180px] flex-1 gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,740px)_260px] lg:items-start">
         <article className="min-w-0">
           <header>
             <h1 className="font-display text-5xl font-semibold leading-[1.02] text-text sm:text-6xl">
@@ -88,6 +89,7 @@ export default async function BlogPostPage({
           </div>
         </aside>
       </main>
+      <PublicFooter />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import { ArticleRow } from "@/components/blog/ArticleRow";
+import { PublicFooter } from "@/components/layout/PublicFooter";
 import { PublicNav } from "@/components/layout/PublicNav";
 import { fetchPublishedPostsFromSupabase } from "@/lib/supabase/blogs";
 
@@ -11,9 +12,9 @@ export default async function BlogsPage() {
   const earlierPosts = publishedPosts.slice(2);
 
   return (
-    <div className="min-h-screen bg-bg text-text">
+    <div className="flex min-h-screen flex-col bg-bg text-text">
       <PublicNav />
-      <main className="mx-auto w-full max-w-[1180px] px-4 py-10 sm:px-6">
+      <main className="mx-auto w-full max-w-[1180px] flex-1 px-4 pb-10 pt-28 sm:px-6">
         <header className="max-w-3xl">
           <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand">
             Blog
@@ -50,7 +51,7 @@ export default async function BlogsPage() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-75"></span>
               <span className="relative inline-flex size-2.5 rounded-full bg-brand"></span>
             </span>
-            <h2 className="font-display text-xl font-bold text-text">Today's Blogs</h2>
+            <h2 className="font-display text-xl font-bold text-text">Today&apos;s Blogs</h2>
           </div>
           <div>
             {todaysBlogs.map((post) => (
@@ -73,6 +74,7 @@ export default async function BlogsPage() {
           </section>
         ) : null}
       </main>
+      <PublicFooter />
     </div>
   );
 }

@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 import { BookCard } from "@/components/books/BookCard";
 import { BookCover } from "@/components/books/BookCover";
+import { PublicFooter } from "@/components/layout/PublicFooter";
 import { PublicNav } from "@/components/layout/PublicNav";
 import { books as initialBooks } from "@/lib/mock/books";
 
@@ -43,9 +44,9 @@ export default function BooksPage() {
   const featuredBook = filteredBooks[0] || visibleBooks[0] || initialBooks[0];
 
   return (
-    <div className="min-h-screen bg-bg text-text">
+    <div className="flex min-h-screen flex-col bg-bg text-text">
       <PublicNav />
-      <main className="mx-auto w-full max-w-[1180px] px-4 py-10 sm:px-6">
+      <main className="mx-auto w-full max-w-[1180px] flex-1 px-4 pb-10 pt-28 sm:px-6">
         <header className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand">
@@ -127,6 +128,7 @@ export default function BooksPage() {
           ))}
         </section>
       </main>
+      <PublicFooter />
     </div>
   );
 }

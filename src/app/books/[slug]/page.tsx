@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Bookmark, FileText } from "lucide-react";
 import { BookCover } from "@/components/books/BookCover";
+import { PublicFooter } from "@/components/layout/PublicFooter";
 import { PublicNav } from "@/components/layout/PublicNav";
 import { books, getBookBySlug } from "@/lib/mock/books";
 
@@ -22,9 +23,9 @@ export default async function BookDetailPage({
   }
 
   return (
-    <div className="min-h-screen bg-bg text-text">
+    <div className="flex min-h-screen flex-col bg-bg text-text">
       <PublicNav />
-      <main className="mx-auto grid w-full max-w-[1040px] gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[300px_1fr]">
+      <main className="mx-auto grid w-full max-w-[1040px] flex-1 gap-10 px-4 pb-10 pt-28 sm:px-6 lg:grid-cols-[300px_1fr]">
         <div>
           <BookCover book={book} />
         </div>
@@ -82,6 +83,7 @@ export default async function BookDetailPage({
           </div>
         </section>
       </main>
+      <PublicFooter />
     </div>
   );
 }

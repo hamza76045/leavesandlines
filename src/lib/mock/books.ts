@@ -10,6 +10,7 @@ export type Book = {
   pages: number;
   status: BookStatus;
   pdfUrl: string;
+  coverImage?: string;
   coverTone: "blue" | "cyan" | "slate";
   hidden?: boolean;
 };
@@ -26,20 +27,8 @@ export const books: Book[] = [
     pages: 350,
     status: "available",
     pdfUrl: "/Docs/Taj%20Mehal%20Say%20Zero%20Point.pdf",
+    coverImage: "/book-covers/taj-mahal-say-zero-point.jpg",
     coverTone: "cyan",
-  },
-  {
-    id: "book-python-intro",
-    slug: "intro-to-python",
-    title: "Intro to Python",
-    author: "Course Notes",
-    category: "Programming & Computer Science",
-    description:
-      "A practical PDF introduction to Python fundamentals, written as a compact learning companion.",
-    pages: 152,
-    status: "available",
-    pdfUrl: "/Docs/intro%20to%20python",
-    coverTone: "blue",
   },
 ];
 
