@@ -1,4 +1,5 @@
 const categories = [
+  { name: "Agriculture", posts: 0, books: 3 },
   { name: "Editorial", posts: 1, books: 0 },
   { name: "Product", posts: 1, books: 1 },
   { name: "Books", posts: 1, books: 0 },

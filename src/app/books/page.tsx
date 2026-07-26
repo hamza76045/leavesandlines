@@ -9,7 +9,7 @@ import { PublicFooter } from "@/components/layout/PublicFooter";
 import { PublicNav } from "@/components/layout/PublicNav";
 import { books as initialBooks } from "@/lib/mock/books";
 
-const filters = ["All", "Programming", "Travelogue", "Literature"];
+const filters = ["All", "Agriculture", "Programming", "Travelogue", "Literature"];
 
 export default function BooksPage() {
   const [visibleBooks, setVisibleBooks] = useState(initialBooks);
