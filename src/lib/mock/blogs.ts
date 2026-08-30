@@ -9,6 +9,12 @@ export type BlogStatus =
 
 export const HARDCODED_AUTHOR = "Leafs & Lines";
 
+export const formatPublishedDate = (date: string) =>
+  new Intl.DateTimeFormat("en", {
+    dateStyle: "medium",
+    timeZone: "UTC",
+  }).format(new Date(date));
+
 export type BlogPost = {
   id: string;
   slug: string;
@@ -230,15 +236,3 @@ export const emptyTiptapDocument: JSONContent = {
     },
   ],
 };
-
-export function getPublishedPosts() {
-  return blogPosts.filter((post) => post.status === "published");
-}
-
-export function getPostBySlug(slug: string) {
-  return blogPosts.find((post) => post.slug === slug);
-}
-
-export function getPostById(id: string) {
-  return blogPosts.find((post) => post.id === id);
-}

@@ -3,16 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import {
-  Bookmark,
   ChevronLeft,
   ChevronRight,
   Maximize2,
   Minus,
+  MoreHorizontal,
   PanelLeft,
-  PanelRight,
   Plus,
-  Search,
-  StickyNote,
 } from "lucide-react";
 import type { Book } from "@/lib/mock/books";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
@@ -23,81 +20,47 @@ export function PdfReaderShell({ book }: { book: Book }) {
   const [pageNumber, setPageNumber] = useState(1);
   const [numPages, setNumPages] = useState<number | null>(null);
   const [zoom, setZoom] = useState(0.95);
-  const [bookmarked, setBookmarked] = useState(false);
+  const [pageWidth, setPageWidth] = useState(320);
   const [leftRailOpen, setLeftRailOpen] = useState(false);
-  const [rightRailOpen, setRightRailOpen] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
-  const [isScrolling, setIsScrolling] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const isSelfScrolling = useRef(false);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pageInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    return () => {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-    };
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new ResizeObserver(([entry]) => {
+      setPageWidth(Math.min(760, Math.floor(entry.contentRect.width)));
+    });
+
+    observer.observe(container);
+    return () => observer.disconnect();
   }, []);
 
   function scrollToPage(targetPage: number) {
     if (!numPages) return;
     const validPage = Math.min(Math.max(1, targetPage), numPages);
     setPageNumber(validPage);
-    isSelfScrolling.current = true;
-    const targetEl = document.getElementById(`pdf-page-${validPage}`);
-    if (targetEl) {
-      targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-    setTimeout(() => {
-      isSelfScrolling.current = false;
-    }, 600);
   }
 
-  const handleScroll = () => {
-    // Auto show sidebar when user scrolls
-    setIsScrolling(true);
-    if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current);
-    }
-    scrollTimeoutRef.current = setTimeout(() => {
-      setIsScrolling(false);
-    }, 1800);
-
-    if (!containerRef.current || isSelfScrolling.current) return;
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const containerCenter = containerRect.top + containerRect.height / 3;
-
-    const pageElements = containerRef.current.querySelectorAll<HTMLElement>("[data-page]");
-    let closestPage = 1;
-    let minDistance = Infinity;
-
-    pageElements.forEach((el) => {
-      const pageNum = Number(el.getAttribute("data-page"));
-      const rect = el.getBoundingClientRect();
-      const distance = Math.abs(containerCenter - rect.top);
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestPage = pageNum;
-      }
-    });
-
-    if (closestPage && closestPage !== pageNumber) {
-      setPageNumber(closestPage);
-    }
-  };
-
-  const showLeftRail = (leftRailOpen || isScrolling) && !focusMode;
+  const showLeftRail = leftRailOpen && !focusMode;
 
   return (
-    <div className="min-h-screen bg-bg text-text">
-      <header className="sticky top-0 z-30 border-b border-border bg-surface/95 text-text shadow-sm backdrop-blur">
+    <div className="flex h-dvh flex-col overflow-hidden bg-bg text-text">
+      <header className="z-30 shrink-0 border-b border-border bg-surface/95 text-text backdrop-blur">
+        <div className="h-0.5 bg-border">
+          <div
+            className="h-full bg-brand transition-[width] duration-200"
+            style={{ width: numPages ? `${(pageNumber / numPages) * 100}%` : "0%" }}
+          />
+        </div>
         <div className="flex min-h-16 flex-wrap items-center justify-between gap-3 px-3 py-2 lg:px-5">
           <div className="flex min-w-0 items-center gap-2">
             <button
               type="button"
-              className="grid size-10 place-items-center rounded-lg border border-border bg-surface text-muted transition hover:text-brand"
+              className="grid size-11 place-items-center rounded-full text-muted transition hover:bg-brand-soft hover:text-brand"
               onClick={() => history.back()}
               aria-label="Back"
               title="Back"
@@ -105,23 +68,23 @@ export function PdfReaderShell({ book }: { book: Book }) {
               <ChevronLeft size={18} />
             </button>
             <div className="min-w-0">
-              <p className="truncate font-display text-sm font-semibold text-text sm:text-base">
+              <p className="truncate font-serif text-sm font-semibold text-text sm:text-base">
                 {book.title}
               </p>
-              <p className="text-xs font-semibold text-subtle">
+              <p className="hidden text-xs font-semibold text-subtle sm:block">
                 Page {pageNumber}
                 {numPages ? ` of ${numPages}` : ""}
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="hidden items-center gap-1 rounded-full border border-border bg-bg px-1.5 py-1 sm:flex">
             <button
               type="button"
-              className={`grid size-10 place-items-center rounded-lg border transition ${
+              className={`grid size-10 place-items-center rounded-full transition ${
                 leftRailOpen
-                  ? "border-brand bg-brand-soft text-brand"
-                  : "border-border bg-surface text-muted hover:text-brand"
+                  ? "bg-brand-soft text-brand"
+                  : "text-muted hover:bg-brand-soft hover:text-brand"
               }`}
               onClick={() => setLeftRailOpen((val) => !val)}
               aria-label="Toggle pages sidebar"
@@ -129,28 +92,21 @@ export function PdfReaderShell({ book }: { book: Book }) {
             >
               <PanelLeft size={17} />
             </button>
-            <div className="hidden h-10 items-center gap-2 rounded-lg border border-border bg-surface px-3 md:flex">
-              <Search size={16} className="text-subtle" />
-              <input
-                className="w-44 bg-transparent text-sm outline-none text-text placeholder:text-subtle"
-                placeholder="Search PDF"
-              />
-            </div>
             <button
               type="button"
-              className="grid size-10 place-items-center rounded-lg border border-border bg-surface text-muted transition hover:text-brand"
+              className="grid size-10 place-items-center rounded-full text-muted transition hover:bg-brand-soft hover:text-brand"
               onClick={() => setZoom((value) => Math.max(0.65, value - 0.1))}
               aria-label="Zoom out"
               title="Zoom out"
             >
               <Minus size={17} />
             </button>
-            <span className="hidden min-w-14 text-center text-sm font-bold text-muted sm:inline">
+            <span className="hidden min-w-12 text-center text-xs font-bold text-muted sm:inline">
               {Math.round(zoom * 100)}%
             </span>
             <button
               type="button"
-              className="grid size-10 place-items-center rounded-lg border border-border bg-surface text-muted transition hover:text-brand"
+              className="grid size-10 place-items-center rounded-full text-muted transition hover:bg-brand-soft hover:text-brand"
               onClick={() => setZoom((value) => Math.min(1.5, value + 0.1))}
               aria-label="Zoom in"
               title="Zoom in"
@@ -160,80 +116,121 @@ export function PdfReaderShell({ book }: { book: Book }) {
             <ThemeToggle />
             <button
               type="button"
-              className={`grid size-10 place-items-center rounded-lg border transition ${
-                bookmarked
-                  ? "border-brand bg-brand-soft text-brand"
-                  : "border-border bg-surface text-muted hover:text-brand"
+              className={`grid size-10 place-items-center rounded-full transition ${
+                focusMode
+                  ? "bg-brand-soft text-brand"
+                  : "text-muted hover:bg-brand-soft hover:text-brand"
               }`}
-              onClick={() => setBookmarked((value) => !value)}
-              aria-label="Bookmark page"
-              title="Bookmark page"
-            >
-              <Bookmark size={17} />
-            </button>
-            <button
-              type="button"
-              className="grid size-10 place-items-center rounded-lg border border-border bg-surface text-muted transition hover:text-brand"
               onClick={() => setFocusMode((value) => !value)}
-              aria-label="Distraction-free mode"
+              aria-label={focusMode ? "Exit distraction-free mode" : "Enter distraction-free mode"}
               title="Distraction-free mode"
             >
               <Maximize2 size={17} />
             </button>
           </div>
+
+          <details className="relative sm:hidden">
+            <summary className="grid size-11 cursor-pointer list-none place-items-center rounded-full border border-border bg-bg text-muted [&::-webkit-details-marker]:hidden">
+              <MoreHorizontal size={20} aria-hidden="true" />
+              <span className="sr-only">Reader controls</span>
+            </summary>
+            <div className="absolute right-0 top-[3.25rem] z-40 grid w-56 gap-2 rounded-lg border border-border bg-surface p-3 shadow-xl">
+              <button
+                type="button"
+                className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-bold text-muted hover:bg-brand-soft hover:text-brand"
+                onClick={() => setLeftRailOpen((value) => !value)}
+              >
+                <PanelLeft size={18} aria-hidden="true" />
+                Jump to page
+              </button>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border text-sm font-bold text-muted"
+                  onClick={() => setZoom((value) => Math.max(0.65, value - 0.1))}
+                >
+                  <Minus size={17} aria-hidden="true" /> Zoom
+                </button>
+                <button
+                  type="button"
+                  className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border text-sm font-bold text-muted"
+                  onClick={() => setZoom((value) => Math.min(1.5, value + 0.1))}
+                >
+                  <Plus size={17} aria-hidden="true" /> Zoom
+                </button>
+              </div>
+              <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm font-bold text-muted">
+                Theme
+                <ThemeToggle />
+              </div>
+              <button
+                type="button"
+                className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-bold ${
+                  focusMode ? "bg-brand-soft text-brand" : "text-muted hover:bg-brand-soft"
+                }`}
+                onClick={() => setFocusMode((value) => !value)}
+              >
+                <Maximize2 size={18} aria-hidden="true" />
+                {focusMode ? "Exit focus mode" : "Focus mode"}
+              </button>
+            </div>
+          </details>
         </div>
       </header>
 
-      <main className="relative flex min-h-[calc(100vh-68px)] justify-center">
-        {/* Pages sidebar overlay: appears automatically on scroll or when toggled */}
-        <aside
-          className={`absolute left-4 top-4 z-20 w-52 max-h-[calc(100vh-120px)] overflow-y-auto no-scrollbar rounded-xl border border-border bg-surface/95 p-4 shadow-xl backdrop-blur transition-all duration-300 ${
-            showLeftRail
-              ? "opacity-100 translate-x-0 pointer-events-auto"
-              : "opacity-0 -translate-x-4 pointer-events-none"
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-text">Pages</h2>
+      <main className="relative flex min-h-0 flex-1 justify-center">
+        {showLeftRail ? (
+          <aside className="absolute left-3 right-3 top-3 z-20 rounded-lg border border-border bg-surface p-4 shadow-xl sm:left-4 sm:right-auto sm:top-4 sm:w-64">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-text">Go to page</h2>
+              <button
+                type="button"
+                className="grid size-11 place-items-center rounded-lg text-muted hover:bg-brand-soft hover:text-brand"
+                onClick={() => setLeftRailOpen(false)}
+                aria-label="Close page navigation"
+              >
+                <PanelLeft size={17} aria-hidden="true" />
+              </button>
+            </div>
+            <p className="mt-2 text-sm leading-6 text-muted">
+              Enter a page from 1 to {numPages ?? "the end"}.
+            </p>
+            <input
+              type="number"
+              ref={pageInputRef}
+              min={1}
+              max={numPages || 1}
+              defaultValue={pageNumber}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  scrollToPage(Number(event.currentTarget.value));
+                  setLeftRailOpen(false);
+                }
+              }}
+              className="mt-4 h-12 w-full rounded-lg border border-border bg-surface px-3 font-bold text-text outline-none focus:border-brand"
+              aria-label="Page number"
+            />
             <button
               type="button"
-              className="grid size-8 place-items-center rounded-lg text-muted hover:bg-brand-soft hover:text-brand"
-              onClick={() => setLeftRailOpen(false)}
-              aria-label="Hide page rail"
-              title="Hide page rail"
+              className="mt-3 h-11 w-full rounded-lg bg-brand text-sm font-bold text-white hover:bg-brand-strong"
+              onClick={() => {
+                scrollToPage(Number(pageInputRef.current?.value));
+                setLeftRailOpen(false);
+              }}
             >
-              <PanelLeft size={16} />
+              Go
             </button>
-          </div>
-          <div className="mt-3 grid gap-1.5">
-            {Array.from({ length: numPages ?? 1 }, (_, index) => {
-              const page = index + 1;
-              return (
-                <button
-                  key={page}
-                  type="button"
-                  onClick={() => scrollToPage(page)}
-                  className={`h-10 rounded-lg border px-3 text-left text-sm font-bold transition ${
-                    pageNumber === page
-                      ? "border-brand bg-brand-soft text-brand"
-                      : "border-border bg-surface-raised text-muted hover:text-brand hover:border-brand/40"
-                  }`}
-                >
-                  Page {page}
-                </button>
-              );
-            })}
-          </div>
-        </aside>
+          </aside>
+        ) : null}
 
-        <section className="flex flex-col min-w-0 w-full bg-bg-soft px-3 py-5 sm:px-6">
+        <section className="flex min-h-0 w-full min-w-0 flex-col bg-bg-soft px-2 py-3 sm:px-6 sm:py-5">
           <div
             ref={containerRef}
-            onScroll={handleScroll}
-            className="mx-auto flex max-h-[calc(100vh-160px)] w-full max-w-[980px] flex-col items-center gap-6 overflow-y-auto no-scrollbar rounded-lg border border-border bg-surface-inset p-3 shadow-inner sm:p-6 scroll-smooth"
+            className="no-scrollbar mx-auto flex min-h-0 w-full max-w-[980px] flex-1 flex-col items-center overflow-y-auto bg-surface-inset p-2 scroll-smooth sm:rounded-lg sm:border sm:border-border sm:p-6"
           >
             <Document
               file={book.pdfUrl}
+              className="flex w-full justify-center"
               loading={
                 <div className="grid min-h-[520px] w-full place-items-center text-sm font-bold text-muted">
                   Loading PDF...
@@ -245,8 +242,7 @@ export function PdfReaderShell({ book }: { book: Book }) {
                     PDF could not be opened
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-muted">
-                    The reader is wired up, but this file may need a `.pdf`
-                    extension or a PDF content type when served.
+                    Check the file and try opening it again.
                   </p>
                 </div>
               }
@@ -254,31 +250,19 @@ export function PdfReaderShell({ book }: { book: Book }) {
                 setNumPages(loadedPages);
               }}
             >
-              {Array.from({ length: numPages ?? 1 }, (_, index) => {
-                const page = index + 1;
-                return (
-                  <div
-                    key={page}
-                    id={`pdf-page-${page}`}
-                    data-page={page}
-                    className="flex justify-center w-full"
-                  >
-                    <Page
-                      pageNumber={page}
-                      scale={zoom}
-                      width={760}
-                      className="overflow-hidden rounded-md shadow-soft"
-                    />
-                  </div>
-                );
-              })}
+              <Page
+                pageNumber={pageNumber}
+                scale={zoom}
+                width={pageWidth}
+                className="overflow-hidden shadow-soft"
+              />
             </Document>
           </div>
 
-          <div className="mx-auto mt-4 flex max-w-[760px] items-center justify-center gap-3">
+          <div className="mx-auto mt-3 flex max-w-[760px] shrink-0 items-center justify-center gap-2 sm:mt-4 sm:gap-3">
             <button
               type="button"
-              className="grid size-10 place-items-center rounded-lg bg-brand text-white transition hover:bg-brand-strong disabled:opacity-40"
+              className="grid size-11 place-items-center rounded-full bg-brand text-white transition hover:bg-brand-strong disabled:opacity-40"
               onClick={() => scrollToPage(pageNumber - 1)}
               disabled={pageNumber <= 1}
               aria-label="Previous page"
@@ -287,7 +271,7 @@ export function PdfReaderShell({ book }: { book: Book }) {
               <ChevronLeft size={18} />
             </button>
 
-            <div className="flex h-10 items-center gap-2 rounded-lg border border-border bg-surface px-4 text-sm font-bold text-text shadow-sm">
+            <div className="flex h-11 items-center gap-2 rounded-full border border-border bg-surface px-4 text-sm font-bold text-text">
               <span>Page</span>
               <input
                 type="number"
@@ -304,7 +288,7 @@ export function PdfReaderShell({ book }: { book: Book }) {
 
             <button
               type="button"
-              className="grid size-10 place-items-center rounded-lg bg-brand text-white transition hover:bg-brand-strong disabled:opacity-40"
+              className="grid size-11 place-items-center rounded-full bg-brand text-white transition hover:bg-brand-strong disabled:opacity-40"
               onClick={() => scrollToPage(pageNumber + 1)}
               disabled={numPages ? pageNumber >= numPages : false}
               aria-label="Next page"

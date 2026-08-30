@@ -1,4 +1,4 @@
-import { Search, SlidersHorizontal } from "lucide-react";
+import Link from "next/link";
 import { ArticleRow } from "@/components/blog/ArticleRow";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 import { PublicNav } from "@/components/layout/PublicNav";
@@ -8,71 +8,53 @@ export const dynamic = "force-dynamic";
 
 export default async function BlogsPage() {
   const publishedPosts = await fetchPublishedPostsFromSupabase();
-  const todaysBlogs = publishedPosts.slice(0, 2);
-  const earlierPosts = publishedPosts.slice(2);
-
+  const [featuredPost, ...remainingPosts] = publishedPosts;
   return (
     <div className="flex min-h-screen flex-col bg-bg text-text">
       <PublicNav />
-      <main className="mx-auto w-full max-w-[1180px] flex-1 px-4 pb-10 pt-28 sm:px-6">
-        <header className="max-w-3xl">
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand">
-            Blog
-          </p>
-          <h1 className="mt-4 font-display text-5xl font-semibold leading-[1.04] text-text">
-            Essays, product notes, and reading workflows.
+      <main className="mx-auto w-full max-w-[1180px] flex-1 px-4 pb-16 pt-28 sm:px-6">
+        <header className="grid gap-8 border-b border-border pb-9 md:grid-cols-[1fr_1.8fr] md:items-end">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand">The journal · 2026</p>
+          <div>
+          <h1 className="font-serif text-4xl font-semibold leading-[1.02] text-text sm:text-6xl">
+            Essays on books,<br />attention, and place.
           </h1>
-          <p className="mt-5 text-lg leading-8 text-muted">
-            A calm editorial workspace with daily reading notes and articles.
+          <p className="mt-5 max-w-xl text-base leading-7 text-muted">
+            Field notes from a small digital library, published slowly and read without hurry.
           </p>
+          </div>
         </header>
 
-        <section className="mt-8 grid gap-4 border-y border-border py-5 lg:grid-cols-[minmax(0,1fr)_180px]">
-          <label className="flex h-12 items-center gap-3 rounded-lg border border-border bg-surface px-3">
-            <Search size={18} className="text-subtle" />
-            <input
-              className="w-full bg-transparent text-sm outline-none text-text placeholder:text-subtle"
-              placeholder="Search articles"
-            />
-          </label>
-          <button
-            type="button"
-            className="flex h-12 items-center justify-center gap-2 rounded-lg border border-border bg-surface px-4 text-sm font-bold text-text transition hover:border-brand hover:text-brand"
-          >
-            <SlidersHorizontal size={17} />
-            Latest
-          </button>
-        </section>
-
-        {/* Today's Blogs */}
-        <section className="mt-10">
-          <div className="flex items-center gap-2 border-b border-border pb-3">
-            <span className="relative flex size-2.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-75"></span>
-              <span className="relative inline-flex size-2.5 rounded-full bg-brand"></span>
-            </span>
-            <h2 className="font-display text-xl font-bold text-text">Today&apos;s Blogs</h2>
-          </div>
-          <div>
-            {todaysBlogs.map((post) => (
-              <ArticleRow key={post.id} post={post} />
-            ))}
-          </div>
-        </section>
-
-        {/* Earlier Articles */}
-        {earlierPosts.length > 0 ? (
-          <section className="mt-12">
-            <div className="border-b border-border pb-3">
-              <h2 className="font-display text-xl font-bold text-text">Earlier Articles</h2>
-            </div>
+        {featuredPost ? (
+          <section className="grid gap-6 border-b border-border py-10 md:grid-cols-[72px_1fr_240px] md:py-14">
+            <p className="font-serif text-lg italic text-subtle">01</p>
             <div>
-              {earlierPosts.map((post) => (
-                <ArticleRow key={post.id} post={post} />
-              ))}
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand">Featured essay</p>
+              <Link href={`/blogs/${featuredPost.slug}`}>
+                <h2 className="mt-4 max-w-3xl font-serif text-3xl font-semibold leading-[1.08] text-text transition hover:text-brand sm:text-5xl">
+                  {featuredPost.title}
+                </h2>
+              </Link>
+            </div>
+            <div className="md:border-l md:border-border md:pl-6">
+              <p className="text-[15px] leading-7 text-muted">{featuredPost.dek}</p>
+              <p className="mt-5 text-xs font-bold uppercase tracking-[0.12em] text-subtle">
+                {featuredPost.readingTime} minute read
+              </p>
             </div>
           </section>
         ) : null}
+
+        <section className="mt-12">
+          <div className="border-b border-border pb-4">
+            <h2 className="font-serif text-2xl font-semibold text-text">More from the journal</h2>
+          </div>
+          <div>
+            {remainingPosts.map((post, index) => (
+              <ArticleRow key={post.id} post={post} index={index + 2} />
+            ))}
+          </div>
+        </section>
       </main>
       <PublicFooter />
     </div>

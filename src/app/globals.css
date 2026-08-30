@@ -19,43 +19,43 @@
   --slate-700: #334155;
   --slate-900: #0f172a;
   --ink: #111827;
-  --paper: #fbfdff;
-  --paper-warm: #f8faf7;
-  --line: rgba(15, 23, 42, 0.11);
+  --paper: #f4f0e7;
+  --paper-warm: #eee7da;
+  --line: rgba(28, 37, 31, 0.16);
   --color-bg: var(--paper);
-  --color-bg-soft: #f3f7fb;
-  --color-surface: #ffffff;
-  --color-surface-raised: #ffffff;
-  --color-surface-inset: #eef5ff;
+  --color-bg-soft: #eae5da;
+  --color-surface: #faf8f2;
+  --color-surface-raised: #fffdf8;
+  --color-surface-inset: #e2e8df;
   --color-border: var(--line);
   --color-text: var(--ink);
-  --color-muted: #334155;
-  --color-subtle: #475569;
-  --color-brand: var(--blue-600);
-  --color-brand-strong: var(--blue-700);
-  --color-brand-soft: var(--blue-50);
-  --color-accent: #0891b2;
+  --color-muted: #465149;
+  --color-subtle: #667169;
+  --color-brand: #174b3a;
+  --color-brand-strong: #0f382b;
+  --color-brand-soft: #dce8df;
+  --color-accent: #c8563f;
   --color-success: #14835f;
   --color-warning: #b7791f;
   --color-danger: #c2410c;
-  --shadow-soft: 0 18px 50px rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 22px 60px rgba(44, 37, 27, 0.14);
 }
 
 :root[data-theme="dark"] {
-  --color-bg: #07070b;
-  --color-bg-soft: #0d0d14;
-  --color-surface: #12121c;
-  --color-surface-raised: #1c1c2b;
-  --color-surface-inset: #0a0a10;
-  --color-border: #222234;
-  --color-text: #f1f1f8;
-  --color-muted: #cbd5e1;
-  --color-subtle: #94a3b8;
-  --color-brand: #3b82f6;
-  --color-brand-strong: #2563eb;
-  --color-brand-soft: rgba(59, 130, 246, 0.16);
-  --color-accent: #38bdf8;
-  --shadow-soft: 0 22px 60px rgba(0, 0, 0, 0.7);
+  --color-bg: #111713;
+  --color-bg-soft: #18201b;
+  --color-surface: #1b241e;
+  --color-surface-raised: #222c25;
+  --color-surface-inset: #283329;
+  --color-border: rgba(238, 231, 218, 0.15);
+  --color-text: #f3eee4;
+  --color-muted: #c2c9c1;
+  --color-subtle: #9ca69e;
+  --color-brand: #a8d5b8;
+  --color-brand-strong: #c5e4ce;
+  --color-brand-soft: rgba(116, 176, 137, 0.17);
+  --color-accent: #ee8b73;
+  --shadow-soft: 0 22px 60px rgba(0, 0, 0, 0.28);
 }
 
 :root[data-theme="dark"] button:hover:not(:disabled),
@@ -115,6 +115,7 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-ui), system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
 }
 
 a {

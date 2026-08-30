@@ -18,7 +18,7 @@ export function Logo({
         fill
         sizes={`${size}px`}
         className="object-cover"
-        priority
+        loading="eager"
       />
     </div>
   );

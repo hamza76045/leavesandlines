@@ -8,11 +8,11 @@ export type Book = {
   category: string;
   description: string;
   pages: number;
+  language: string;
+  format: string;
   status: BookStatus;
   pdfUrl: string;
-  coverImage?: string;
-  coverTone: "blue" | "cyan" | "slate";
-  hidden?: boolean;
+  coverImage: string;
 };
 
 export const books: Book[] = [
@@ -25,10 +25,11 @@ export const books: Book[] = [
     description:
       "An extraordinary travelogue and literary work detailing the epic journey from Taj Mahal to Zero Point.",
     pages: 350,
+    language: "Urdu",
+    format: "PDF",
     status: "available",
     pdfUrl: "/Docs/Taj%20Mehal%20Say%20Zero%20Point.pdf",
     coverImage: "/book-covers/taj-mahal-say-zero-point.jpg",
-    coverTone: "cyan",
   },
 ];
 
