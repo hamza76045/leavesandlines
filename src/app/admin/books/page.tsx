@@ -47,7 +47,7 @@ export default function AdminBooksPage() {
 
       <section className="mt-6 rounded-lg border border-border bg-surface">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[820px] text-left text-sm">
+          <table className="w-full min-w-[700px] text-left text-sm sm:min-w-[820px]">
             <thead className="border-b border-border bg-bg-soft text-xs text-subtle">
               <tr>
                 <th className="px-5 py-3">Title</th>
@@ -69,58 +69,45 @@ export default function AdminBooksPage() {
                       isHidden ? "opacity-60 bg-bg-soft/40" : ""
                     }`}
                   >
-                    <td className="px-5 py-4 font-bold text-text">
-                      {book.title}
-                      {isHidden ? (
-                        <span className="ml-2 inline-flex items-center rounded-md bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-500">
-                          Hidden
-                        </span>
-                      ) : null}
-                    </td>
+                    <td className="px-5 py-4 font-bold text-text">{book.title}</td>
                     <td className="px-5 py-4 text-muted">{book.author}</td>
                     <td className="px-5 py-4 text-muted">{book.category}</td>
                     <td className="px-5 py-4 text-muted">{book.pages}</td>
                     <td className="px-5 py-4">
                       {isHidden ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-500">
-                          <EyeOff size={13} />
-                          Hidden from public
+                        <span className="whitespace-nowrap text-xs font-bold text-amber-500">
+                          Not visible
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-500">
-                          <Eye size={13} />
-                          Visible on public site
+                        <span className="whitespace-nowrap text-xs font-bold text-emerald-500">
+                          Visible
                         </span>
                       )}
                     </td>
                     <td className="px-5 py-4 text-right">
-                      <div className="flex items-center justify-end gap-3">
+                      <div className="flex items-center justify-end gap-2 sm:gap-3">
                         <button
                           type="button"
                           onClick={() => toggleHide(book.id)}
-                          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition shadow-sm ${
+                          aria-label={isHidden ? `Show ${book.title}` : `Hide ${book.title}`}
+                          title={isHidden ? "Show book" : "Hide book"}
+                          className={`grid size-9 shrink-0 place-items-center rounded-lg shadow-sm transition ${
                             isHidden
                               ? "bg-emerald-600 text-white hover:bg-emerald-700"
                               : "border border-border bg-surface text-muted hover:border-amber-500 hover:text-amber-500"
                           }`}
                         >
                           {isHidden ? (
-                            <>
-                              <Eye size={14} className="text-white" />
-                              Unhide Book
-                            </>
+                            <Eye size={15} aria-hidden="true" />
                           ) : (
-                            <>
-                              <EyeOff size={14} />
-                              Hide Book
-                            </>
+                            <EyeOff size={15} aria-hidden="true" />
                           )}
                         </button>
                         <Link
                           href={`/reader/${book.id}`}
-                          className="font-bold text-brand hover:text-brand-strong"
+                          className="inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-lg border border-border bg-surface px-3 text-xs font-bold text-brand transition hover:border-brand hover:bg-brand-soft hover:text-brand-strong"
                         >
-                          Open Reader
+                          Open reader
                         </Link>
                       </div>
                     </td>

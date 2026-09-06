@@ -13,6 +13,7 @@ export type Book = {
   status: BookStatus;
   pdfUrl: string;
   coverImage: string;
+  coverTone?: string;
 };
 
 export const books: Book[] = [
@@ -30,6 +31,54 @@ export const books: Book[] = [
     status: "available",
     pdfUrl: "/Docs/Taj%20Mehal%20Say%20Zero%20Point.pdf",
     coverImage: "/book-covers/taj-mahal-say-zero-point.jpg",
+  },
+  {
+    id: "book-citrus-varieties-of-pakistan",
+    slug: "citrus-varieties-of-pakistan",
+    title: "Citrus Varieties of Pakistan",
+    author: "Muhammad Ibrahim",
+    category: "Agriculture",
+    description:
+      "A comprehensive guide detailing citrus cultivation, varieties, and orchard management in Pakistan.",
+    pages: 148,
+    language: "English",
+    format: "PDF",
+    status: "available",
+    pdfUrl: "/Docs/CITRUS%20VARIETIES%20OF%20PAKISTAN.pdf",
+    coverImage: "/book-covers/citrus-varieties-of-pakistan.jpg",
+    coverTone: "cyan",
+  },
+  {
+    id: "book-guava-and-ber",
+    slug: "guava-and-ber",
+    title: "Guava and Ber",
+    author: "Muhammad Ibrahim",
+    category: "Agriculture",
+    description:
+      "Detailed study and practical guidelines for Guava and Ber fruit farming and production in Pakistan.",
+    pages: 51,
+    language: "English",
+    format: "PDF",
+    status: "available",
+    pdfUrl: "/Docs/GUAVA%20AND%20BER.pdf",
+    coverImage: "/book-covers/guava-and-ber.jpg",
+    coverTone: "slate",
+  },
+  {
+    id: "book-mango",
+    slug: "mango",
+    title: "Mango (Varieties of Pakistan)",
+    author: "Muhammad Ibrahim",
+    category: "Agriculture",
+    description:
+      "An extensive publication covering mango production, commercial varieties, and orchard management.",
+    pages: 129,
+    language: "English",
+    format: "PDF",
+    status: "available",
+    pdfUrl: "/Docs/Mango.pdf",
+    coverImage: "/book-covers/mango.jpg",
+    coverTone: "blue",
   },
 ];
 

@@ -35,7 +35,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-bg-soft text-text">
       <div className="grid min-h-screen lg:grid-cols-[248px_1fr]">
         <aside className="flex min-w-0 flex-col border-b border-border bg-surface lg:border-b-0 lg:border-r">
-          <div className="flex flex-col gap-3 border-b border-border p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5 lg:flex-col lg:items-stretch lg:p-5">
+          <div className="flex items-center justify-between gap-3 border-b border-border p-4 sm:px-5 lg:flex-col lg:items-stretch lg:p-5">
             <Link href="/" className="flex min-w-0 items-center gap-3">
               <Logo size={36} />
               <div className="min-w-0">
@@ -45,7 +45,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </p>
               </div>
             </Link>
-            <ThemeToggle className="self-end sm:self-auto lg:self-start" />
+            <ThemeToggle className="shrink-0 lg:self-start" />
           </div>
           <nav className="grid grid-cols-4 gap-1 p-2 lg:flex lg:flex-1 lg:flex-col lg:justify-between lg:p-3">
             <div className="contents lg:flex lg:flex-col lg:gap-1">
