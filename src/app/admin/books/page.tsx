@@ -1,42 +1,42 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { books as initialBooks } from "@/lib/mock/books";
 
 export default function AdminBooksPage() {
-  const [hiddenBookIds, setHiddenBookIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("leafs_hidden_books");
-      if (stored) {
-        setHiddenBookIds(JSON.parse(stored));
-      }
-    } catch {}
-  }, []);
+  const hiddenBooks = useSyncExternalStore(
+    (notify) => {
+      window.addEventListener("storage", notify);
+      return () => window.removeEventListener("storage", notify);
+    },
+    () => localStorage.getItem("leafs_hidden_books") ?? "[]",
+    () => "[]",
+  );
+  let hiddenBookIds: string[] = [];
+  try {
+    hiddenBookIds = JSON.parse(hiddenBooks);
+  } catch {}
 
   function toggleHide(id: string) {
-    setHiddenBookIds((prev) => {
-      const updated = prev.includes(id)
-        ? prev.filter((item) => item !== id)
-        : [...prev, id];
-      try {
-        localStorage.setItem("leafs_hidden_books", JSON.stringify(updated));
-      } catch {}
-      return updated;
-    });
+    const updated = hiddenBookIds.includes(id)
+      ? hiddenBookIds.filter((item) => item !== id)
+      : [...hiddenBookIds, id];
+    try {
+      localStorage.setItem("leafs_hidden_books", JSON.stringify(updated));
+      window.dispatchEvent(new StorageEvent("storage", { key: "leafs_hidden_books" }));
+    } catch {}
   }
 
   return (
     <div className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6">
       <header className="flex flex-col gap-4 border-b border-border pb-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand">
+          <p className="text-xs font-bold text-brand">
             Books Library
           </p>
-          <h1 className="mt-2 font-display text-3xl font-semibold text-text">
+          <h1 className="mt-2 font-serif text-3xl font-semibold text-text">
             Manage PDF Library & Visibility
           </h1>
           <p className="mt-1 text-sm text-muted">
@@ -48,7 +48,7 @@ export default function AdminBooksPage() {
       <section className="mt-6 rounded-lg border border-border bg-surface">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] text-left text-sm">
-            <thead className="border-b border-border bg-bg-soft text-xs uppercase tracking-[0.12em] text-subtle">
+            <thead className="border-b border-border bg-bg-soft text-xs text-subtle">
               <tr>
                 <th className="px-5 py-3">Title</th>
                 <th className="px-5 py-3">Author</th>
@@ -100,13 +100,13 @@ export default function AdminBooksPage() {
                           onClick={() => toggleHide(book.id)}
                           className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition shadow-sm ${
                             isHidden
-                              ? "bg-emerald-600 !text-white hover:bg-emerald-700"
+                              ? "bg-emerald-600 text-white hover:bg-emerald-700"
                               : "border border-border bg-surface text-muted hover:border-amber-500 hover:text-amber-500"
                           }`}
                         >
                           {isHidden ? (
                             <>
-                              <Eye size={14} className="!text-white" />
+                              <Eye size={14} className="text-white" />
                               Unhide Book
                             </>
                           ) : (

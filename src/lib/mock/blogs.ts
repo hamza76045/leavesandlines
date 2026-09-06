@@ -7,11 +7,13 @@ export type BlogStatus =
   | "published"
   | "archived";
 
-export const HARDCODED_AUTHOR = "Leafs & Lines";
+export const HARDCODED_AUTHOR = "Leaves & Lines";
 
 export const formatPublishedDate = (date: string) =>
-  new Intl.DateTimeFormat("en", {
-    dateStyle: "medium",
+  new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
     timeZone: "UTC",
   }).format(new Date(date));
 

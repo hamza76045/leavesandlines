@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { LogIn, ShieldAlert } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
@@ -47,23 +48,33 @@ export default function AdminLoginPage() {
         <ThemeToggle />
       </div>
 
-      <aside className="hidden border-r border-border bg-brand p-12 text-white lg:flex lg:flex-col lg:justify-between">
-        <Logo size={52} />
-        <blockquote className="max-w-md font-serif text-4xl leading-tight">
-          “A good reading room begins with careful editing.”
-        </blockquote>
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/70">Leafs &amp; Lines · Publishing desk</p>
+      <aside className="relative hidden overflow-hidden border-r border-border bg-brand-fill p-12 text-on-brand-fill lg:block">
+        <Image
+          src="/login.webp"
+          alt=""
+          fill
+          sizes="40vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-brand-fill/45" />
+        <div className="relative flex h-full flex-col justify-between">
+          <Logo size={52} />
+          <blockquote className="max-w-md font-serif text-4xl leading-tight">
+            “A good reading room begins with careful editing.”
+          </blockquote>
+          <p className="text-xs font-bold text-on-brand-fill opacity-70">Leaves &amp; Lines · Publishing desk</p>
+        </div>
       </aside>
 
       <div className="mx-auto flex w-full max-w-md flex-col justify-center px-5 py-20 sm:px-8">
         <div>
           <Logo size={48} className="lg:hidden" />
-          <p className="mt-8 text-[10px] font-bold uppercase tracking-[0.2em] text-brand lg:mt-0">Publishing desk</p>
+          <p className="mt-8 text-xs font-bold text-brand lg:mt-0">Publishing desk</p>
           <h1 className="mt-4 font-serif text-4xl font-semibold tracking-tight text-text">
             Sign in
           </h1>
           <p className="mt-2 text-sm text-muted">
-            Manage Leafs and Lines articles and books.
+            Manage Leaves and Lines articles and books.
           </p>
         </div>
 
@@ -121,9 +132,9 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-brand font-bold !text-white transition hover:bg-brand-strong disabled:opacity-50"
+            className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-brand-fill font-bold text-on-brand-fill transition hover:bg-brand-fill-hover disabled:opacity-50"
           >
-            <LogIn size={18} className="!text-white" />
+            <LogIn size={18} className="text-white" />
             <span>{loading ? "Signing in..." : "Sign in"}</span>
           </button>
         </form>

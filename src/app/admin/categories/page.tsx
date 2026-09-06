@@ -11,16 +11,16 @@ export default function CategoriesPage() {
     <div className="mx-auto w-full max-w-[960px] px-4 py-6 sm:px-6">
       <header className="flex flex-col gap-4 border-b border-border pb-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand">
+          <p className="text-xs font-bold text-brand">
             Categories
           </p>
-          <h1 className="mt-2 font-display text-3xl font-semibold text-text">
+          <h1 className="mt-2 font-serif text-3xl font-semibold text-text">
             Content taxonomy
           </h1>
         </div>
         <button
           type="button"
-          className="h-10 rounded-lg bg-brand px-4 text-sm font-bold text-white transition hover:bg-brand-strong"
+          className="h-10 rounded-lg bg-brand-fill px-4 text-sm font-bold text-on-brand-fill transition hover:bg-brand-fill-hover"
         >
           New Category
         </button>
@@ -29,7 +29,7 @@ export default function CategoriesPage() {
       <section className="mt-6 rounded-lg border border-border bg-surface">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[620px] text-left text-sm">
-            <thead className="border-b border-border bg-bg-soft text-xs uppercase tracking-[0.12em] text-subtle">
+            <thead className="border-b border-border bg-bg-soft text-xs text-subtle">
               <tr>
                 <th className="px-5 py-3">Name</th>
                 <th className="px-5 py-3">Posts</th>

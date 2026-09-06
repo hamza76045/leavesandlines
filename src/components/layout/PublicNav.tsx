@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Logo } from "@/components/common/Logo";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 const navItems = [
   { href: "/blogs", label: "Essays" },
@@ -14,81 +12,53 @@ const navItems = [
 
 export function PublicNav() {
   const pathname = usePathname();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-bg/95 backdrop-blur-xl">
-      <div className="mx-auto flex h-18 w-full max-w-[1180px] items-center justify-between px-4 sm:px-6">
+      <a
+        href="#main-content"
+        className="absolute left-4 top-2 z-10 -translate-y-20 rounded-full bg-brand-fill px-5 py-3 text-base font-semibold text-on-brand-fill transition focus:translate-y-0"
+      >
+        Skip to content
+      </a>
+      <div className="mx-auto flex h-28 w-full max-w-[1180px] flex-col px-4 sm:h-20 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <Link
           href="/"
-          className="group flex min-w-0 items-center gap-3"
-          aria-label="Go to Leafs and Lines home"
+          className="group flex min-h-14 min-w-0 items-center gap-3"
+          aria-label="Go to Leaves and Lines home"
         >
           <span className="grid size-9 shrink-0 place-items-center">
             <Logo size={36} className="border-0 shadow-none" />
           </span>
-          <span className="truncate font-serif text-lg font-semibold text-text">Leafs &amp; Lines</span>
-          <span className="hidden border-l border-border pl-3 text-[10px] font-bold uppercase tracking-[0.18em] text-subtle sm:block">
+          <span className="truncate font-serif text-lg font-semibold text-text">Leaves &amp; Lines</span>
+          <span className="hidden border-l border-border pl-3 text-xs font-semibold text-subtle lg:block">
             A reading journal
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary navigation">
-          {navItems.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`flex h-11 items-center border-b px-1 text-xs font-bold uppercase tracking-[0.15em] transition ${pathname?.startsWith(href)
-                  ? "border-brand text-brand"
-                  : "border-transparent text-muted hover:text-brand"
-                }`}
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="hidden items-center lg:flex">
+        <div className="flex min-h-14 items-center justify-between border-t border-border sm:min-h-0 sm:gap-4 sm:border-0">
+          <nav className="flex items-center gap-1" aria-label="Primary navigation">
+            {navItems.map(({ href, label }) => {
+              const active = pathname?.startsWith(href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex min-h-12 items-center border-b-2 px-2 text-base font-medium transition ${
+                    active
+                      ? "border-brand text-brand"
+                      : "border-transparent text-muted hover:text-brand"
+                  }`}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+          </nav>
           <ThemeToggle />
-        </div>
-
-        <div className="flex items-center gap-2 lg:hidden">
-          <ThemeToggle />
-          <button
-            type="button"
-            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={mobileMenuOpen}
-            onClick={() => setMobileMenuOpen((open) => !open)}
-            className="grid size-11 place-items-center rounded-lg border border-border bg-surface text-text transition hover:border-brand hover:text-brand"
-          >
-            {mobileMenuOpen ? (
-              <X aria-hidden="true" size={20} />
-            ) : (
-              <Menu aria-hidden="true" size={20} />
-            )}
-          </button>
         </div>
       </div>
-
-      {mobileMenuOpen ? (
-        <div className="mx-auto w-full border-b border-border bg-surface p-3 shadow-[var(--shadow-soft)] lg:hidden">
-          <div className="grid gap-1">
-            {navItems.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex min-h-11 items-center rounded-lg px-4 py-3 text-sm font-semibold transition ${pathname?.startsWith(href)
-                    ? "bg-brand-soft text-brand"
-                    : "text-text hover:bg-brand-soft hover:text-brand"
-                  }`}
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      ) : null}
     </header>
   );
 }

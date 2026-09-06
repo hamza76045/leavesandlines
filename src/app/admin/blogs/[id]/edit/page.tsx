@@ -25,10 +25,10 @@ export default async function EditBlogPage({
   return (
     <div className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6">
       <header className="border-b border-border pb-6">
-        <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand">
+        <p className="text-xs font-bold text-brand">
           Edit Blog
         </p>
-        <h1 className="mt-2 font-display text-3xl font-semibold text-text">
+        <h1 className="mt-2 font-serif text-3xl font-semibold text-text">
           {post.title}
         </h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">

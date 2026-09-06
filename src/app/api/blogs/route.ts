@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { isValidAdminToken } from "@/lib/auth/admin";
 import {
   deletePostFromSupabase,
   fetchAllPostsFromSupabase,
@@ -7,11 +9,20 @@ import {
 } from "@/lib/supabase/blogs";
 import type { BlogPost } from "@/lib/mock/blogs";
 
+async function isAdmin() {
+  const token = (await cookies()).get("admin_session")?.value;
+  return token ? isValidAdminToken(token) : false;
+}
+
+const unauthorized = () =>
+  NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const all = searchParams.get("all") === "true";
 
   if (all) {
+    if (!(await isAdmin())) return unauthorized();
     const posts = await fetchAllPostsFromSupabase();
     return NextResponse.json({ posts });
   }
@@ -22,6 +33,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    if (!(await isAdmin())) return unauthorized();
     const body = await request.json();
     
     // Generate clean base slug from title or fallback
@@ -56,13 +68,17 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true, post });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Failed to save blog post" }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to save blog post" },
+      { status: 500 }
+    );
   }
 }
 
 export async function DELETE(request: Request) {
   try {
+    if (!(await isAdmin())) return unauthorized();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -77,7 +93,10 @@ export async function DELETE(request: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Failed to delete post" }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to delete post" },
+      { status: 500 }
+    );
   }
 }

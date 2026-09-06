@@ -24,7 +24,7 @@ export const books: Book[] = [
     category: "Travelogue & Literature",
     description:
       "An extraordinary travelogue and literary work detailing the epic journey from Taj Mahal to Zero Point.",
-    pages: 350,
+    pages: 401,
     language: "Urdu",
     format: "PDF",
     status: "available",

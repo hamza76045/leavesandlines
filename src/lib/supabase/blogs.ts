@@ -1,5 +1,5 @@
-import { createClient } from "@/lib/supabase/client";
-import { blogPosts as mockBlogPosts, type BlogPost } from "@/lib/mock/blogs";
+import { createAdminClient, createPublicClient } from "@/lib/supabase/client";
+import type { BlogPost } from "@/lib/mock/blogs";
 
 export type SupabaseBlogPostRow = {
   id: string;
@@ -9,7 +9,7 @@ export type SupabaseBlogPostRow = {
   reading_time: number;
   published_at: string;
   status: string;
-  content_json: any;
+  content_json: BlogPost["contentJson"];
   created_at?: string;
 };
 
@@ -40,83 +40,52 @@ function mapBlogPostToRow(post: BlogPost): SupabaseBlogPostRow {
 }
 
 export async function fetchAllPostsFromSupabase(): Promise<BlogPost[]> {
-  try {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from("blog_posts")
-      .select("*")
-      .order("created_at", { ascending: false });
+  const { data, error } = await createAdminClient()
+    .from("blog_posts")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-    if (error || !data || data.length === 0) {
-      return mockBlogPosts;
-    }
-
-    return data.map(mapRowToBlogPost);
-  } catch {
-    return mockBlogPosts;
-  }
+  if (error) throw error;
+  return data.map(mapRowToBlogPost);
 }
 
 export async function fetchPublishedPostsFromSupabase(): Promise<BlogPost[]> {
-  try {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from("blog_posts")
-      .select("*")
-      .eq("status", "published")
-      .order("created_at", { ascending: false });
+  const { data, error } = await createPublicClient()
+    .from("blog_posts")
+    .select("*")
+    .eq("status", "published")
+    .order("created_at", { ascending: false });
 
-    if (error || !data || data.length === 0) {
-      return mockBlogPosts.filter((p) => p.status === "published");
-    }
-
-    return data.map(mapRowToBlogPost);
-  } catch {
-    return mockBlogPosts.filter((p) => p.status === "published");
-  }
+  if (error) throw error;
+  return data.map(mapRowToBlogPost);
 }
 
 export async function fetchPostBySlugFromSupabase(slug: string): Promise<BlogPost | null> {
-  try {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from("blog_posts")
-      .select("*")
-      .eq("slug", slug)
-      .maybeSingle();
+  const { data, error } = await createPublicClient()
+    .from("blog_posts")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .maybeSingle();
 
-    if (error || !data) {
-      return mockBlogPosts.find((p) => p.slug === slug) || null;
-    }
-
-    return mapRowToBlogPost(data);
-  } catch {
-    return mockBlogPosts.find((p) => p.slug === slug) || null;
-  }
+  if (error) throw error;
+  return data ? mapRowToBlogPost(data) : null;
 }
 
 export async function fetchPostByIdFromSupabase(id: string): Promise<BlogPost | null> {
-  try {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from("blog_posts")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
+  const { data, error } = await createAdminClient()
+    .from("blog_posts")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
 
-    if (error || !data) {
-      return mockBlogPosts.find((p) => p.id === id) || null;
-    }
-
-    return mapRowToBlogPost(data);
-  } catch {
-    return mockBlogPosts.find((p) => p.id === id) || null;
-  }
+  if (error) throw error;
+  return data ? mapRowToBlogPost(data) : null;
 }
 
 export async function upsertPostToSupabase(post: BlogPost): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = createClient();
+    const supabase = createAdminClient();
     const row = mapBlogPostToRow(post);
     const { error } = await supabase.from("blog_posts").upsert(row, { onConflict: "id" });
 
@@ -125,14 +94,17 @@ export async function upsertPostToSupabase(post: BlogPost): Promise<{ success: b
     }
 
     return { success: true };
-  } catch (err: any) {
-    return { success: false, error: err.message || "Failed to persist to Supabase" };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to persist to Supabase",
+    };
   }
 }
 
 export async function deletePostFromSupabase(id: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = createClient();
+    const supabase = createAdminClient();
     const { error } = await supabase.from("blog_posts").delete().eq("id", id);
 
     if (error) {
@@ -140,7 +112,10 @@ export async function deletePostFromSupabase(id: string): Promise<{ success: boo
     }
 
     return { success: true };
-  } catch (err: any) {
-    return { success: false, error: err.message || "Failed to delete from Supabase" };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to delete from Supabase",
+    };
   }
 }

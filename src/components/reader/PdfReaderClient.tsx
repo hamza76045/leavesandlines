@@ -8,13 +8,13 @@ const PdfReaderShell = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="grid min-h-screen place-items-center bg-[#eaf1f8] text-sm font-bold text-muted">
-        Loading reader...
+      <div className="grid min-h-screen place-items-center bg-bg text-base font-semibold text-muted">
+        Loading reader…
       </div>
     ),
   },
 );
 
 export function PdfReaderClient({ book }: { book: Book }) {
-  return <PdfReaderShell book={book} />;
+  return <PdfReaderShell key={book.id} book={book} />;
 }

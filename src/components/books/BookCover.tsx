@@ -10,8 +10,7 @@ type BookCoverProps = {
 export function BookCover({ book, compact = false, eager = false }: BookCoverProps) {
   return (
     <div
-      className="relative aspect-[405/551] overflow-hidden rounded-md bg-surface shadow-[0_18px_36px_rgba(15,23,42,0.18)] ring-1 ring-black/10"
-      aria-label={`${book.title} cover`}
+      className="relative aspect-[405/551] overflow-hidden rounded-md bg-surface shadow-[var(--shadow-soft)] ring-1 ring-border"
     >
       <Image
         src={book.coverImage}

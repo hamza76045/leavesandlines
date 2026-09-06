@@ -1,32 +1,28 @@
 import Link from "next/link";
-import {
-  formatPublishedDate,
-  HARDCODED_AUTHOR,
-  type BlogPost,
-} from "@/lib/mock/blogs";
+import { formatPublishedDate, type BlogPost } from "@/lib/mock/blogs";
 
-export function ArticleRow({ post, index }: { post: BlogPost; index?: number }) {
+export function ArticleRow({ post, index }: { post: BlogPost; index: number }) {
   return (
-    <article className="group border-b border-border py-7 transition hover:border-brand sm:py-9">
-      <div className="grid gap-4 sm:grid-cols-[56px_minmax(0,1fr)_auto] sm:gap-6">
-        <span className="font-serif text-sm italic text-subtle">
-          {String(index ?? 1).padStart(2, "0")}
+    <article className="border-b border-border">
+      <Link
+        href={`/blogs/${post.slug}`}
+        className="group grid grid-cols-[32px_minmax(0,1fr)] gap-x-4 gap-y-3 py-6 focus-visible:outline-offset-2 sm:grid-cols-[48px_minmax(0,1fr)_auto] sm:gap-x-6 sm:py-8"
+      >
+        <span className="font-serif text-sm italic text-subtle transition group-hover:text-brand">
+          {String(index).padStart(2, "0")}
         </span>
-        <div className="max-w-3xl">
-        <Link href={`/blogs/${post.slug}`}>
-          <h3 className="font-serif text-2xl font-semibold leading-[1.15] text-text transition group-hover:text-brand sm:text-3xl">
+        <div className="min-w-0 max-w-3xl">
+          <h3 className="font-serif text-2xl font-semibold leading-[1.15] text-text transition group-hover:text-brand">
             {post.title}
           </h3>
-        </Link>
-        <p className="mt-3 max-w-2xl text-[15px] leading-7 text-muted">{post.dek}</p>
+          <p className="mt-2 max-w-[60ch] text-sm leading-6 text-muted">
+            {post.dek}
+          </p>
         </div>
-        <p className="text-xs font-bold uppercase tracking-[0.12em] text-subtle sm:pt-1 sm:text-right">
-          {formatPublishedDate(post.publishedAt)}<br className="hidden sm:block" />
-          <span className="mt-1 inline-block font-medium normal-case tracking-normal">
-            {post.readingTime} min · {HARDCODED_AUTHOR}
-          </span>
+        <p className="col-start-2 text-xs font-semibold text-subtle sm:col-start-3 sm:row-start-1 sm:pt-1 sm:text-right">
+          {formatPublishedDate(post.publishedAt)} · {post.readingTime} min read
         </p>
-      </div>
+      </Link>
     </article>
   );
 }
