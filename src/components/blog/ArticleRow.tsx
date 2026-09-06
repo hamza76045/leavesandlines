@@ -1,24 +1,28 @@
 import Link from "next/link";
-import { HARDCODED_AUTHOR, type BlogPost } from "@/lib/mock/blogs";
-import { ArticleMark } from "./ArticleMark";
+import { formatPublishedDate, type BlogPost } from "@/lib/mock/blogs";
 
-export function ArticleRow({ post }: { post: BlogPost }) {
+export function ArticleRow({ post, index }: { post: BlogPost; index: number }) {
   return (
-    <article className="grid gap-5 border-b border-border py-6 transition hover:border-brand md:grid-cols-[1fr_180px] md:items-center">
-      <div>
-        <Link href={`/blogs/${post.slug}`}>
-          <h3 className="mt-2 font-display text-2xl font-semibold leading-tight text-text transition hover:text-brand">
+    <article className="border-b border-border">
+      <Link
+        href={`/blogs/${post.slug}`}
+        className="group grid grid-cols-[32px_minmax(0,1fr)] gap-x-4 gap-y-3 py-6 focus-visible:outline-offset-2 sm:grid-cols-[48px_minmax(0,1fr)_auto] sm:gap-x-6 sm:py-8"
+      >
+        <span className="font-serif text-sm italic text-subtle transition group-hover:text-brand">
+          {String(index).padStart(2, "0")}
+        </span>
+        <div className="min-w-0 max-w-3xl">
+          <h3 className="font-serif text-2xl font-semibold leading-[1.15] text-text transition group-hover:text-brand">
             {post.title}
           </h3>
-        </Link>
-        <p className="mt-3 max-w-2xl leading-7 text-muted">{post.dek}</p>
-        <p className="mt-4 text-sm font-semibold text-subtle">
-          {HARDCODED_AUTHOR} · {post.publishedAt} · {post.readingTime} min read
+          <p className="mt-2 max-w-[60ch] text-sm leading-6 text-muted">
+            {post.dek}
+          </p>
+        </div>
+        <p className="col-start-2 text-xs font-semibold text-subtle sm:col-start-3 sm:row-start-1 sm:pt-1 sm:text-right">
+          {formatPublishedDate(post.publishedAt)} · {post.readingTime} min read
         </p>
-      </div>
-      <div className="hidden md:block">
-        <ArticleMark post={post} />
-      </div>
+      </Link>
     </article>
   );
 }

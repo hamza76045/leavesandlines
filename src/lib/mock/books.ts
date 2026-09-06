@@ -8,11 +8,12 @@ export type Book = {
   category: string;
   description: string;
   pages: number;
+  language: string;
+  format: string;
   status: BookStatus;
   pdfUrl: string;
-  coverImage?: string;
-  coverTone: "blue" | "cyan" | "slate";
-  hidden?: boolean;
+  coverImage: string;
+  coverTone?: string;
 };
 
 export const books: Book[] = [
@@ -24,11 +25,12 @@ export const books: Book[] = [
     category: "Travelogue & Literature",
     description:
       "An extraordinary travelogue and literary work detailing the epic journey from Taj Mahal to Zero Point.",
-    pages: 350,
+    pages: 401,
+    language: "Urdu",
+    format: "PDF",
     status: "available",
     pdfUrl: "/Docs/Taj%20Mehal%20Say%20Zero%20Point.pdf",
     coverImage: "/book-covers/taj-mahal-say-zero-point.jpg",
-    coverTone: "cyan",
   },
   {
     id: "book-citrus-varieties-of-pakistan",
@@ -39,6 +41,8 @@ export const books: Book[] = [
     description:
       "A comprehensive guide detailing citrus cultivation, varieties, and orchard management in Pakistan.",
     pages: 148,
+    language: "English",
+    format: "PDF",
     status: "available",
     pdfUrl: "/Docs/CITRUS%20VARIETIES%20OF%20PAKISTAN.pdf",
     coverImage: "/book-covers/citrus-varieties-of-pakistan.jpg",
@@ -53,6 +57,8 @@ export const books: Book[] = [
     description:
       "Detailed study and practical guidelines for Guava and Ber fruit farming and production in Pakistan.",
     pages: 51,
+    language: "English",
+    format: "PDF",
     status: "available",
     pdfUrl: "/Docs/GUAVA%20AND%20BER.pdf",
     coverImage: "/book-covers/guava-and-ber.jpg",
@@ -67,6 +73,8 @@ export const books: Book[] = [
     description:
       "An extensive publication covering mango production, commercial varieties, and orchard management.",
     pages: 129,
+    language: "English",
+    format: "PDF",
     status: "available",
     pdfUrl: "/Docs/Mango.pdf",
     coverImage: "/book-covers/mango.jpg",

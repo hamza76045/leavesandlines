@@ -20,15 +20,6 @@ export function generateAdminToken() {
   return Buffer.from(`${email}:${secret}`).toString("base64");
 }
 
-export async function getAdminSession() {
-  const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get(COOKIE_NAME);
-  if (!sessionCookie?.value) {
-    return false;
-  }
-  return isValidAdminToken(sessionCookie.value);
-}
-
 export async function createAdminSession() {
   const cookieStore = await cookies();
   const token = generateAdminToken();

@@ -6,20 +6,16 @@ import {
   Bold,
   Heading2,
   Heading3,
-  ImageIcon,
   Italic,
-  LinkIcon,
   List,
   ListOrdered,
   Quote,
   Redo2,
   Save,
-  ShieldCheck,
   Undo2,
 } from "lucide-react";
 import { useState } from "react";
 import { tiptapExtensions } from "@/lib/tiptap/extensions";
-import { BlogRenderer } from "./BlogRenderer";
 
 type BlogEditorProps = {
   initialId?: string;
@@ -71,7 +67,6 @@ export function BlogEditor({
 }: BlogEditorProps) {
   const [postId, setPostId] = useState(initialId);
   const [postSlug, setPostSlug] = useState(initialSlug);
-  const [currentStatus, setCurrentStatus] = useState<"draft" | "published">("draft");
   const [title, setTitle] = useState(initialTitle);
   const [dek, setDek] = useState(initialDek);
   const [contentJson, setContentJson] = useState<JSONContent>(initialContent);
@@ -87,7 +82,7 @@ export function BlogEditor({
     editorProps: {
       attributes: {
         class:
-          "editorial-prose max-w-none rounded-lg border border-border bg-surface px-5 py-5 focus:outline-none focus:border-brand",
+          "editorial-prose max-w-none rounded-lg border border-border bg-surface px-5 py-5 focus:outline-none focus:border-brand w-full",
       },
     },
     onUpdate({ editor: currentEditor }) {
@@ -122,12 +117,11 @@ export function BlogEditor({
       } else if (data.post) {
         setPostId(data.post.id);
         setPostSlug(data.post.slug);
-        setCurrentStatus(data.post.status);
         setSavedAt(new Date().toLocaleTimeString());
         setSaveMessage(
           status === "published"
             ? "Published successfully to Supabase!"
-            : "Draft saved successfully to Supabase!"
+            : "Draft saved successfully to Supabase!",
         );
       }
     } catch {
@@ -137,51 +131,9 @@ export function BlogEditor({
     }
   }
 
-  function addLink() {
-    if (!editor) {
-      return;
-    }
-
-    const previousUrl = editor.getAttributes("link").href as string | undefined;
-    const url = window.prompt("Link URL", previousUrl ?? "https://");
-
-    if (url === null) {
-      return;
-    }
-
-    if (url.trim() === "") {
-      editor.chain().focus().extendMarkRange("link").unsetLink().run();
-      return;
-    }
-
-    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
-  }
-
-  function addImage() {
-    if (!editor) {
-      return;
-    }
-
-    const url = window.prompt("Image URL");
-
-    if (url?.trim()) {
-      editor.chain().focus().setImage({ src: url.trim(), alt: title }).run();
-    }
-  }
-
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+    <div className="space-y-6">
       <section className="min-w-0 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-brand/40 bg-brand-soft px-4 py-3 text-sm font-bold text-brand">
-          <div className="flex items-center gap-2">
-            <ShieldCheck size={18} />
-            <span>Admin Editor Mode (Tiptap Rich Text Enabled)</span>
-          </div>
-          <span className="text-xs font-semibold text-muted">
-            Only admins can edit or write. Readers have read-only access.
-          </span>
-        </div>
-
         <div className="rounded-lg border border-border bg-surface p-5">
           <div>
             <label className="block">
@@ -275,20 +227,10 @@ export function BlogEditor({
             >
               <Quote size={17} />
             </ToolButton>
-            <ToolButton
-              label="Link"
-              active={editor?.isActive("link")}
-              onClick={addLink}
-            >
-              <LinkIcon size={17} />
-            </ToolButton>
-            <ToolButton label="Image" onClick={addImage}>
-              <ImageIcon size={17} />
-            </ToolButton>
           </div>
           <div className="tiptap-editor p-4">
             {editor ? (
-              <EditorContent editor={editor} />
+              <EditorContent className="w-full" editor={editor} />
             ) : (
               <div className="h-96 animate-pulse rounded-lg bg-slate-100" />
             )}
@@ -296,83 +238,38 @@ export function BlogEditor({
         </div>
       </section>
 
-      <aside className="space-y-5">
-        <div className="rounded-lg border border-border bg-surface p-5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h2 className="font-display text-lg font-semibold text-text">
-                Publish State
-              </h2>
-              <p className="mt-1 text-sm font-semibold text-muted">
-                {saving ? "Saving to Supabase..." : "Ready"}
-              </p>
-            </div>
-            <span
-              className={`rounded-full px-3 py-1 text-xs font-bold capitalize ${
-                currentStatus === "published"
-                  ? "bg-emerald-500/10 text-emerald-500"
-                  : "bg-amber-500/10 text-amber-500"
-              }`}
-            >
-              {currentStatus}
-            </span>
-          </div>
-
-          {error ? (
-            <div className="mt-4 rounded-lg bg-red-500/10 p-3 text-xs font-semibold text-red-500">
-              {error}
-            </div>
-          ) : null}
-
-          <div className="mt-5 grid gap-2">
-            <button
-              type="button"
-              disabled={saving}
-              onClick={() => handleSave("draft")}
-              className="flex h-11 items-center justify-center gap-2 rounded-lg bg-brand px-4 text-sm font-bold !text-white transition hover:bg-brand-strong disabled:opacity-50"
-            >
-              <Save size={16} className="!text-white" />
-              Save Draft
-            </button>
-            <button
-              type="button"
-              disabled={saving}
-              onClick={() => handleSave("published")}
-              className="flex h-11 items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 text-sm font-bold !text-white transition hover:bg-emerald-700 disabled:opacity-50"
-            >
-              Publish Article
-            </button>
-          </div>
-          {saveMessage ? (
-            <p className="mt-3 text-sm font-semibold text-success">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="min-h-5 flex-1 text-sm font-semibold" aria-live="polite">
+          {saving ? (
+            <span className="text-muted">Saving to Supabase...</span>
+          ) : error ? (
+            <span className="text-danger">{error}</span>
+          ) : saveMessage ? (
+            <span className="text-success">
               {saveMessage} ({savedAt})
-            </p>
+            </span>
           ) : null}
         </div>
-
-        <div className="rounded-lg border border-border bg-surface p-5">
-          <h2 className="font-display text-lg font-semibold text-text">
-            Article Preview
-          </h2>
-          <p className="mt-1 text-sm text-muted">
-            Check layout, hierarchy, and reading rhythm before publishing.
-          </p>
-          <div className="mt-5 border-t border-border pt-5">
-            <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand">
-              Publication Preview
-            </p>
-            <h3 className="mt-2 font-display text-2xl font-semibold leading-tight text-text">
-              {title || "Untitled article"}
-            </h3>
-            <p className="mt-3 text-sm leading-6 text-muted">
-              {dek || "Add a dek to preview index copy."}
-            </p>
-            <div className="mt-5 max-h-[420px] overflow-auto rounded-lg border border-border bg-bg px-4 py-4">
-              <BlogRenderer content={contentJson} />
-            </div>
-          </div>
+        <div className="flex shrink-0 justify-end gap-3">
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => handleSave("draft")}
+            className="flex h-11 items-center justify-center gap-2 rounded-lg bg-brand-fill px-5 text-sm font-bold text-on-brand-fill transition hover:bg-brand-fill-hover disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Save size={16} className="text-white" />
+            Save Draft
+          </button>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => handleSave("published")}
+            className="flex h-11 items-center justify-center rounded-lg bg-emerald-600 px-5 text-sm font-bold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Publish Article
+          </button>
         </div>
-      </aside>
+      </div>
     </div>
   );
 }

@@ -28,7 +28,15 @@ export default function AdminBlogsPage() {
   }
 
   useEffect(() => {
-    loadPosts();
+    void (async () => {
+      try {
+        const res = await fetch("/api/blogs?all=true");
+        const data = await res.json();
+        if (data.posts) setPosts(data.posts);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   async function handlePublish(post: BlogPost) {
@@ -81,10 +89,10 @@ export default function AdminBlogsPage() {
     <div className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6">
       <header className="flex flex-col gap-4 border-b border-border pb-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand">
+          <p className="text-xs font-bold text-brand">
             Blogs
           </p>
-          <h1 className="mt-2 font-display text-3xl font-semibold text-text">
+          <h1 className="mt-2 font-serif text-3xl font-semibold text-text">
             Manage Articles & Drafts
           </h1>
           <p className="mt-1 text-sm text-muted">
@@ -102,9 +110,9 @@ export default function AdminBlogsPage() {
           </button>
           <Link
             href="/admin/blogs/new"
-            className="flex h-10 items-center gap-2 rounded-lg bg-brand px-4 text-sm font-bold !text-white transition hover:bg-brand-strong"
+            className="flex h-10 items-center gap-2 rounded-lg bg-brand-fill px-4 text-sm font-bold text-on-brand-fill transition hover:bg-brand-fill-hover"
           >
-            <FilePlus2 size={16} className="!text-white" />
+            <FilePlus2 size={16} className="text-white" />
             New Blog
           </Link>
         </div>
@@ -126,7 +134,7 @@ export default function AdminBlogsPage() {
             onClick={() => setStatusFilter("all")}
             className={`h-10 rounded-lg px-4 text-sm font-bold transition ${
               statusFilter === "all"
-                ? "bg-brand text-white"
+                ? "bg-brand-fill text-on-brand-fill"
                 : "border border-border bg-surface text-muted hover:border-brand hover:text-brand"
             }`}
           >
@@ -137,7 +145,7 @@ export default function AdminBlogsPage() {
             onClick={() => setStatusFilter("published")}
             className={`h-10 rounded-lg px-4 text-sm font-bold transition ${
               statusFilter === "published"
-                ? "bg-brand text-white"
+                ? "bg-brand-fill text-on-brand-fill"
                 : "border border-border bg-surface text-muted hover:border-brand hover:text-brand"
             }`}
           >
@@ -160,7 +168,7 @@ export default function AdminBlogsPage() {
       <section className="mt-5 rounded-lg border border-border bg-surface">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[920px] text-left text-sm">
-            <thead className="border-b border-border bg-bg-soft text-xs uppercase tracking-[0.12em] text-subtle">
+            <thead className="border-b border-border bg-bg-soft text-xs text-subtle">
               <tr>
                 <th className="px-5 py-3">Title</th>
                 <th className="px-5 py-3">Author</th>
@@ -194,7 +202,7 @@ export default function AdminBlogsPage() {
                           <button
                             type="button"
                             onClick={() => handlePublish(post)}
-                            className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold !text-white transition hover:bg-emerald-700 shadow-sm"
+                            className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-700 shadow-sm"
                             title="Publish article now"
                           >
                             Publish

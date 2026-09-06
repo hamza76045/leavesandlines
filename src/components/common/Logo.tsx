@@ -14,11 +14,11 @@ export function Logo({
     >
       <Image
         src="/logo.svg"
-        alt="Leafs & Lines Logo"
+        alt="Leaves & Lines logo"
         fill
         sizes={`${size}px`}
         className="object-cover"
-        priority
+        loading="eager"
       />
     </div>
   );

@@ -34,40 +34,52 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-bg-soft text-text">
       <div className="grid min-h-screen lg:grid-cols-[248px_1fr]">
-        <aside className="flex flex-col border-b border-border bg-surface lg:border-b-0 lg:border-r">
-          <div className="flex h-16 items-center justify-between border-b border-border px-5">
-            <Link href="/" className="flex items-center gap-3">
+        <aside className="flex min-w-0 flex-col border-b border-border bg-surface lg:border-b-0 lg:border-r">
+          <div className="flex items-center justify-between gap-3 border-b border-border p-4 sm:px-5 lg:flex-col lg:items-stretch lg:p-5">
+            <Link href="/" className="flex min-w-0 items-center gap-3">
               <Logo size={36} />
-              <div>
-                <p className="font-display font-semibold text-text">Leafs & Lines</p>
-                <p className="text-xs font-bold uppercase tracking-wider text-brand">
+              <div className="min-w-0">
+                <p className="whitespace-nowrap font-serif font-semibold text-text">Leaves &amp; Lines</p>
+                <p className="whitespace-nowrap text-xs font-bold uppercase tracking-wider text-brand">
                   Single Admin
                 </p>
               </div>
             </Link>
-            <ThemeToggle />
+            <ThemeToggle className="shrink-0 lg:self-start" />
           </div>
-          <nav className="flex flex-1 gap-1 overflow-x-auto p-3 lg:flex-col lg:justify-between">
-            <div className="flex gap-1 lg:flex-col lg:space-y-1">
-              {adminNav.map(({ href, label, icon: Icon }, index) => (
-                <Link
-                  key={`${href}-${label}-${index}`}
-                  href={href}
-                  className="flex h-10 shrink-0 items-center gap-3 rounded-lg px-3 text-sm font-bold text-muted transition hover:bg-brand-soft hover:text-brand"
-                >
-                  <Icon aria-hidden="true" size={16} />
-                  {label}
-                </Link>
-              ))}
+          <nav className="grid grid-cols-4 gap-1 p-2 lg:flex lg:flex-1 lg:flex-col lg:justify-between lg:p-3">
+            <div className="contents lg:flex lg:flex-col lg:gap-1">
+              {adminNav.map(({ href, label, icon: Icon }) => {
+                const active =
+                  href === "/admin"
+                    ? pathname === href
+                    : pathname.startsWith(href);
+
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    aria-current={active ? "page" : undefined}
+                    className={`flex h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-lg px-1 text-xs font-bold transition lg:h-10 lg:flex-row lg:justify-start lg:gap-3 lg:px-3 lg:text-sm ${
+                      active
+                        ? "bg-brand-soft text-brand"
+                        : "text-muted hover:bg-brand-soft hover:text-brand"
+                    }`}
+                  >
+                    <Icon aria-hidden="true" size={18} />
+                    <span>{label}</span>
+                  </Link>
+                );
+              })}
             </div>
-            <div className="pt-4 lg:border-t lg:border-border">
+            <div className="contents lg:block lg:border-t lg:border-border lg:pt-4">
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex h-10 w-full shrink-0 items-center gap-3 rounded-lg px-3 text-sm font-bold text-red-500 transition hover:bg-red-500/10"
+                className="flex h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-lg px-1 text-xs font-bold text-red-500 transition hover:bg-red-500/10 lg:h-10 lg:w-full lg:flex-row lg:justify-start lg:gap-3 lg:px-3 lg:text-sm"
               >
-                <LogOut aria-hidden="true" size={16} />
-                Logout
+                <LogOut aria-hidden="true" size={18} />
+                <span>Logout</span>
               </button>
             </div>
           </nav>

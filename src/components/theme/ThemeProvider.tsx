@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 type Theme = "light" | "dark";
 
@@ -15,20 +15,11 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const STORAGE_KEY = "leafs-and-lines-theme";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
-
-  useEffect(() => {
-    // Read current theme from data-theme attribute set by inline script or localStorage
-    const currentTheme = document.documentElement.getAttribute("data-theme") as Theme | null;
-    const initialTheme: Theme =
-      currentTheme === "dark" || currentTheme === "light"
-        ? currentTheme
-        : (localStorage.getItem(STORAGE_KEY) as Theme) ||
-          (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-
-    setThemeState(initialTheme);
-    document.documentElement.setAttribute("data-theme", initialTheme);
-  }, []);
+  const [theme, setThemeState] = useState<Theme>(() =>
+    typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark"
+      ? "dark"
+      : "light",
+  );
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);

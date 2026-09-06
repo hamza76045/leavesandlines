@@ -1,42 +1,42 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { books as initialBooks } from "@/lib/mock/books";
 
 export default function AdminBooksPage() {
-  const [hiddenBookIds, setHiddenBookIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("leafs_hidden_books");
-      if (stored) {
-        setHiddenBookIds(JSON.parse(stored));
-      }
-    } catch {}
-  }, []);
+  const hiddenBooks = useSyncExternalStore(
+    (notify) => {
+      window.addEventListener("storage", notify);
+      return () => window.removeEventListener("storage", notify);
+    },
+    () => localStorage.getItem("leafs_hidden_books") ?? "[]",
+    () => "[]",
+  );
+  let hiddenBookIds: string[] = [];
+  try {
+    hiddenBookIds = JSON.parse(hiddenBooks);
+  } catch {}
 
   function toggleHide(id: string) {
-    setHiddenBookIds((prev) => {
-      const updated = prev.includes(id)
-        ? prev.filter((item) => item !== id)
-        : [...prev, id];
-      try {
-        localStorage.setItem("leafs_hidden_books", JSON.stringify(updated));
-      } catch {}
-      return updated;
-    });
+    const updated = hiddenBookIds.includes(id)
+      ? hiddenBookIds.filter((item) => item !== id)
+      : [...hiddenBookIds, id];
+    try {
+      localStorage.setItem("leafs_hidden_books", JSON.stringify(updated));
+      window.dispatchEvent(new StorageEvent("storage", { key: "leafs_hidden_books" }));
+    } catch {}
   }
 
   return (
     <div className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6">
       <header className="flex flex-col gap-4 border-b border-border pb-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-brand">
+          <p className="text-xs font-bold text-brand">
             Books Library
           </p>
-          <h1 className="mt-2 font-display text-3xl font-semibold text-text">
+          <h1 className="mt-2 font-serif text-3xl font-semibold text-text">
             Manage PDF Library & Visibility
           </h1>
           <p className="mt-1 text-sm text-muted">
@@ -47,8 +47,8 @@ export default function AdminBooksPage() {
 
       <section className="mt-6 rounded-lg border border-border bg-surface">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[820px] text-left text-sm">
-            <thead className="border-b border-border bg-bg-soft text-xs uppercase tracking-[0.12em] text-subtle">
+          <table className="w-full min-w-[700px] text-left text-sm sm:min-w-[820px]">
+            <thead className="border-b border-border bg-bg-soft text-xs text-subtle">
               <tr>
                 <th className="px-5 py-3">Title</th>
                 <th className="px-5 py-3">Author</th>
@@ -69,58 +69,45 @@ export default function AdminBooksPage() {
                       isHidden ? "opacity-60 bg-bg-soft/40" : ""
                     }`}
                   >
-                    <td className="px-5 py-4 font-bold text-text">
-                      {book.title}
-                      {isHidden ? (
-                        <span className="ml-2 inline-flex items-center rounded-md bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-500">
-                          Hidden
-                        </span>
-                      ) : null}
-                    </td>
+                    <td className="px-5 py-4 font-bold text-text">{book.title}</td>
                     <td className="px-5 py-4 text-muted">{book.author}</td>
                     <td className="px-5 py-4 text-muted">{book.category}</td>
                     <td className="px-5 py-4 text-muted">{book.pages}</td>
                     <td className="px-5 py-4">
                       {isHidden ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-500">
-                          <EyeOff size={13} />
-                          Hidden from public
+                        <span className="whitespace-nowrap text-xs font-bold text-amber-500">
+                          Not visible
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-500">
-                          <Eye size={13} />
-                          Visible on public site
+                        <span className="whitespace-nowrap text-xs font-bold text-emerald-500">
+                          Visible
                         </span>
                       )}
                     </td>
                     <td className="px-5 py-4 text-right">
-                      <div className="flex items-center justify-end gap-3">
+                      <div className="flex items-center justify-end gap-2 sm:gap-3">
                         <button
                           type="button"
                           onClick={() => toggleHide(book.id)}
-                          className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition shadow-sm ${
+                          aria-label={isHidden ? `Show ${book.title}` : `Hide ${book.title}`}
+                          title={isHidden ? "Show book" : "Hide book"}
+                          className={`grid size-9 shrink-0 place-items-center rounded-lg shadow-sm transition ${
                             isHidden
-                              ? "bg-emerald-600 !text-white hover:bg-emerald-700"
+                              ? "bg-emerald-600 text-white hover:bg-emerald-700"
                               : "border border-border bg-surface text-muted hover:border-amber-500 hover:text-amber-500"
                           }`}
                         >
                           {isHidden ? (
-                            <>
-                              <Eye size={14} className="!text-white" />
-                              Unhide Book
-                            </>
+                            <Eye size={15} aria-hidden="true" />
                           ) : (
-                            <>
-                              <EyeOff size={14} />
-                              Hide Book
-                            </>
+                            <EyeOff size={15} aria-hidden="true" />
                           )}
                         </button>
                         <Link
                           href={`/reader/${book.id}`}
-                          className="font-bold text-brand hover:text-brand-strong"
+                          className="inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-lg border border-border bg-surface px-3 text-xs font-bold text-brand transition hover:border-brand hover:bg-brand-soft hover:text-brand-strong"
                         >
-                          Open Reader
+                          Open reader
                         </Link>
                       </div>
                     </td>
